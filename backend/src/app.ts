@@ -1,4 +1,5 @@
 import express from "express"
+import path from "path"
 import { clerkMiddleware } from '@clerk/express'
 import authRoutes from "./router/authRoutes.ts"
 import chatRoutes from "./router/chatRoutes.ts"
@@ -20,5 +21,16 @@ app.use("/api/users", userRoutes)
 
 // error handlers must come after all the routes and other middleware so tahy can catch errors passed with next(err) ot thrown inside async handlers
 app.use(errorHandler)
+
+
+// serve frontend in production
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../../web/dist")))
+
+    app.get("/{*any}", (_, res) => {
+        res.sendFile(path.join(__dirname, "../../web/dist/index.html"))
+    })
+
+}
 
 export default app;
