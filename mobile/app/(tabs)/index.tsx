@@ -1,15 +1,15 @@
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView, Button } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
+
 const ChatsTab = () => {
     return (
-        <ScrollView
-            className='bg-surface '
-            contentInsetAdjustmentBehavior='automatic'
+        <SafeAreaView
+            className='bg-surface flex-1'
         >
             <Text className='text-white'>ChatsTab</Text>
-        </ScrollView>
+        </SafeAreaView>
     )
 }
 
