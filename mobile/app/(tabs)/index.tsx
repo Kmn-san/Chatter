@@ -23,7 +23,7 @@ const ChatsTab = () => {
         return (
             <View className='flex-1 bg-surface items-center justify-center'>
                 <Text className='text-red-500 text-3xl'>Failed to load chats</Text>
-                <Pressable onPress={() => refetch()} className='mt-4 px-4 py-2 bg-primary rounded-lg'>  
+                <Pressable onPress={() => refetch()} className='mt-4 px-4 py-2 bg-primary rounded-lg'>
                     <Text className='text-foreground'>Retry</Text>
                 </Pressable>
             </View>
@@ -61,8 +61,7 @@ const ChatsTab = () => {
                     buttonLabel='New Chat'
 
                     //todo : fix this later
-                    onPressButton={() => console.log("pressed")
-                    }
+                    onPressButton={() => router.push("/new-chat")}
                 />}
 
             />
@@ -81,7 +80,7 @@ function Header() {
                 <Text className='text-2xl font-bold text-foreground'>Chats</Text>
                 <Pressable
                     className='size-10 bg-primary rounded-full items-center justify-center'
-                // onPress={() => router.push("/new-chat")}
+                    onPress={() => router.push("/new-chat")}
                 >
                     <Ionicons name='create-outline' size={20} color="#0D0D0F" />
                 </Pressable>
