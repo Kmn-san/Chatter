@@ -10,7 +10,7 @@ import Useritem from '@/components/Useritem'
 
 const NewChatScreen = () => {
     const [searchQuery, setSearchQuery] = useState("")
-    const { data: allUsers, isLoading } = useUsers()
+    const { data: allUsers, isLoading, isError, refetch } = useUsers()
     const { mutate: getOrCreateChat, isPending: isCreatingChat } = useGetOrCreateChat()
 
     //client-side filtering
@@ -78,6 +78,13 @@ const NewChatScreen = () => {
                         {isCreatingChat || isLoading ? (
                             <View className='flex-1 items-center justify-between'>
                                 <ActivityIndicator size="large" color="#F4A261" />
+                            </View>
+                        ) : isError ? (
+                            <View className="flex-1 items-center justify-center px-5">
+                                <Text className="text-muted-foreground text-lg mt-4">Unable to load users</Text>
+                                <Pressable onPress={() => refetch()} className="mt-3 px-4 py-2 rounded-full bg-surface-card">
+                                    <Text className="text-foreground text-sm">Retry</Text>
+                                </Pressable>
                             </View>
                         ) : !users || users.length === 0 ? (
                             <View className="flex-1 items-center justify-center px-5">
