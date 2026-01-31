@@ -35,20 +35,28 @@ export const useSocketStore = create<SocketState>((set, get) => ({
 
     connect: (token, queryClient) => {
         const existingSocket = get().socket
-        if (existingSocket?.connected) return
-        if (existingSocket) existingSocket.disconnect()
+        if (existingSocket) {
+            existingSocket.removeAllListeners();
+            existingSocket.disconnect();
+        }
+
         const socket = io(SOCKET_URL, { auth: { token } })
 
         socket.on("connect", () => {
             console.log("Socket connected, id: ", socket.id);
             Sentry.logger.info("Socket connected : ", { socketId: socket.id })
             set({ isConnected: true })
+
+            const { currentChatId } = get();
+            if (currentChatId) {
+                socket.emit("join-chat", currentChatId);
+            }
         })
 
         socket.on("disconnect", () => {
             console.log("Socket disconnected, id: ", socket.id);
             Sentry.logger.info("Socket disconnected : ", { socketId: socket.id })
-            set({ isConnected: false })
+            set({ isConnected: false, typingUsers: new Map() });
         })
 
         socket.on("online-users", ({ userIds }: { userIds: string[] }) => {
@@ -142,19 +150,25 @@ export const useSocketStore = create<SocketState>((set, get) => ({
         set({ socket, queryClient })
     },
     disconnect: () => {
-        const socket = get().socket;
-        if (socket) {
-            socket.disconnect()
-            set({
-                socket: null,
-                isConnected: false,
-                onlineUsers: new Set(),
-                typingUsers: new Map(),
-                unreadChats: new Set(),
-                currentChatId: null,
-                queryClient: null,
-            })
+        const { socket, currentChatId } = get();
+        if (!socket) return;
+
+        if (currentChatId) {
+            socket.emit("leave-chat", currentChatId);
         }
+
+        socket.removeAllListeners();
+        socket.disconnect();
+
+        set({
+            socket: null,
+            isConnected: false,
+            onlineUsers: new Set(),
+            typingUsers: new Map(),
+            unreadChats: new Set(),
+            currentChatId: null,
+            queryClient: null,
+        });
     },
     joinChat: (chatId) => {
         const socket = get().socket;
@@ -221,7 +235,4 @@ export const useSocketStore = create<SocketState>((set, get) => ({
             socket.emit("typing", { chatId, isTyping })
         }
     },
-
-
-
 }))
