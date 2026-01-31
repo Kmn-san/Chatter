@@ -11,16 +11,27 @@ import { useSocketStore } from '@/lib/socket'
 
 const NewChatScreen = () => {
     const [searchQuery, setSearchQuery] = useState("")
+    const [submittedQuery, setSubmittedQuery] = useState("")
+
     const { data: allUsers, isLoading, isError, refetch } = useUsers()
     const { mutate: getOrCreateChat, isPending: isCreatingChat } = useGetOrCreateChat()
     const { onlineUsers } = useSocketStore()
 
+    const handleSearch = () => {
+        setSubmittedQuery(searchQuery.trim().toLowerCase())
+    }
+
+
     //client-side filtering
     const users = allUsers?.filter((u) => {
-        if (!searchQuery.trim()) return true;
-        const query = searchQuery.toLowerCase()
-        return u.name?.toLowerCase().includes(query) || u.email?.toLowerCase().includes(query)
+        if (!submittedQuery) return false
+
+        const name = u.name?.toLowerCase()
+        const email = u.email?.toLowerCase()
+
+        return name === submittedQuery || email === submittedQuery
     })
+
 
     const handleUserSelect = (user: User) => {
         getOrCreateChat(user._id, {
@@ -64,6 +75,7 @@ const NewChatScreen = () => {
                     <View className="px-5 pt-3 pb-2 bg-surface">
                         <View className="flex-row items-center bg-surface-card rounded-full px-3 py-1.5 gap-2 border border-surface-light">
                             <Ionicons name="search" size={18} color="#6B6B70" />
+
                             <TextInput
                                 placeholder="Search users"
                                 placeholderTextColor="#6B6B70"
@@ -71,8 +83,14 @@ const NewChatScreen = () => {
                                 value={searchQuery}
                                 onChangeText={setSearchQuery}
                                 autoCapitalize="none"
+                                onSubmitEditing={handleSearch} // keyboard search
                             />
+
+                            <Pressable onPress={handleSearch}>
+                                <Text className="text-primary text-sm font-medium">Search</Text>
+                            </Pressable>
                         </View>
+
                     </View>
 
                     {/* USER LIST  */}
