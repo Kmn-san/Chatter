@@ -58,18 +58,19 @@ const AuthScreen = () => {
                     style={{ position: "absolute", width: "100%", height: "100%" }}
                 />
 
+               
             </View>
 
             <SafeAreaView className="flex-1">
                 {/* Top Section - Branding */}
                 <View className="items-center pt-10">
                     <Image
-                        source={require("../../assets/images/logo.png")}
+                        source={require("../../assets/images/icon.png")}
                         style={{ width: 100, height: 100, marginVertical: -20 }}
                         contentFit="contain"
                     />
                     <Text className="text-4xl font-bold text-primary font-serif tracking-wider uppercase">
-                        Chatter
+                        CHATTER
                     </Text>
                 </View>
 
@@ -78,22 +79,22 @@ const AuthScreen = () => {
                     <Image
                         source={require("../../assets/images/auth.png")}
                         style={{
-                            width: width - 48,
-                            height: height * 0.3,
+                            width: width,
+                            height: height * 0.5,
                         }}
                         contentFit="contain"
                     />
 
-                    {/* Headline */}
+                    {/* Headline
                     <View className="mt-6 items-center">
                         <Text className="text-5xl font-bold text-foreground text-center font-sans">
                             Connect & Chat
                         </Text>
                         <Text className="text-3xl font-bold text-primary font-mono">Seamlessly</Text>
-                    </View>
+                    </View> */}
 
                     {/* AUTH BUTTONS */}
-                    <View className="flex-row gap-4 mt-10">
+                    <View className="flex-row gap-4">
                         {/* GOOGLE BTN */}
                         <Pressable
                             className="flex-1 flex-row items-center justify-center gap-2 bg-white/95 py-4 rounded-2xl active:scale-[0.97]"
