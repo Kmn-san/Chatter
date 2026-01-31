@@ -52,12 +52,12 @@ export const useSocketStore = create<SocketState>((set, get) => ({
         })
 
         socket.on("online-users", ({ userIds }: { userIds: string[] }) => {
-            console.log("Recieved online-users: ", userIds);
+            console.log("Received online-users: ", userIds);
             set({ onlineUsers: new Set(userIds) })
         })
 
         socket.on("user-online", ({ userId }: { userId: string }) => {
-            set(state => ({
+            set((state) => ({
                 onlineUsers: new Set([...state.onlineUsers, userId])
             }))
         })
@@ -78,10 +78,10 @@ export const useSocketStore = create<SocketState>((set, get) => ({
         })
 
         socket.on("new-message", (message: Message) => {
-            const senderId = (message.sender as MessageSender)._id
+            const senderId = (message.sender as MessageSender)._id;
             const { currentChatId } = get()
 
-            // add message to the chat's message list, replacing optimistix messages
+            // add message to the chat's message list, replacing optimistic messages
             queryClient.setQueryData<Message[]>(["messages", message.chat], (old) => {
                 if (!old) return [message];
                 // remove any optimistic messages (temp IDs) and add the real one
@@ -109,7 +109,7 @@ export const useSocketStore = create<SocketState>((set, get) => ({
                 })
             })
 
-            // mark as unread if not currently viewing this caht and message is from other user
+            // mark as unread if not currently viewing this chat and message is from other user
             if (currentChatId !== message.chat) {
                 const chats = queryClient.getQueryData<Chat[]>(["chats"]);
                 const chat = chats?.find((c) => c._id === message.chat)
@@ -128,16 +128,16 @@ export const useSocketStore = create<SocketState>((set, get) => ({
             })
         })
 
-        socket.on("typing", 
-            ({ userId, chatId, isTyping }: { userId: string, chatId: string, isTyping: boolean }) => {
-            set((state) => {
-                const typingUsers = new Map(state.typingUsers);
-                if (isTyping) typingUsers.set(chatId, userId)
-                else typingUsers.delete(chatId)
+        socket.on("typing",
+            ({ userId, chatId, isTyping }: { userId: string; chatId: string; isTyping: boolean }) => {
+                set((state) => {
+                    const typingUsers = new Map(state.typingUsers);
+                    if (isTyping) typingUsers.set(chatId, userId)
+                    else typingUsers.delete(chatId)
 
-                return { typingUsers: typingUsers }
+                    return { typingUsers: typingUsers }
+                })
             })
-        })
 
         set({ socket, queryClient })
     },
@@ -198,7 +198,7 @@ export const useSocketStore = create<SocketState>((set, get) => ({
         socket.emit("send-message", { chatId, text })
 
         Sentry.logger.info("Message sent successfully", { chatId, messageLength: text.length })
- 
+
         const errorHandler = (error: { message: string }) => {
             Sentry.logger.error("Failed to send message", {
                 chatId,
