@@ -109,7 +109,6 @@ const ChatDetailScreen = () => {
   return (
     <SafeAreaView
       className='flex-1 bg-surface'
-      edges={["top", "bottom"]}
     >
       {/* Header */}
       <View className="flex-row items-center px-4 py-2 bg-surface border-b border-surface-light">
@@ -142,9 +141,10 @@ const ChatDetailScreen = () => {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0} // header height
       >
         <View className="flex-1 bg-surface">
+          {/* Messages */}
           {isLoading ? (
             <View className="flex-1 items-center justify-center">
               <ActivityIndicator size="large" color="#F4A261" />
@@ -160,22 +160,36 @@ const ChatDetailScreen = () => {
           ) : (
             <ScrollView
               ref={scrollViewRef}
-              contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 12, gap: 8 }}
-              onContentSizeChange={() => {
-                scrollViewRef.current?.scrollToEnd({ animated: false });
+              className="flex-1"
+              contentContainerStyle={{
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                gap: 8,
               }}
+              keyboardShouldPersistTaps="handled"
+              onContentSizeChange={() =>
+                scrollViewRef.current?.scrollToEnd({ animated: true })
+              }
             >
               {messages.map((message) => {
-                const senderId = (message.sender as MessageSender)._id;
-                const isFromMe = currentUser ? senderId === currentUser._id : false;
+                const senderId = (message.sender as MessageSender)._id
+                const isFromMe = currentUser
+                  ? senderId === currentUser._id
+                  : false
 
-                return <MessageBubble key={message._id} message={message} isFromMe={isFromMe} />;
+                return (
+                  <MessageBubble
+                    key={message._id}
+                    message={message}
+                    isFromMe={isFromMe}
+                  />
+                )
               })}
             </ScrollView>
           )}
 
           {/* Input bar */}
-          <View className="px-3 pb-3 pt-2 bg-surface border-t border-surface-light">
+          <View className="px-3 pt-2 bg-surface border-t border-surface-light">
             <View className="flex-row items-end bg-surface-card rounded-3xl px-3 py-2 gap-2">
               <Pressable className="w-8 h-8 rounded-full items-center justify-center mb-1">
                 <Ionicons name="add" size={22} color="#F4A261" />
@@ -189,7 +203,6 @@ const ChatDetailScreen = () => {
                 style={{ maxHeight: 100 }}
                 value={messageText}
                 onChangeText={handleTyping}
-                onSubmitEditing={handleSend}
                 editable={!isSending}
               />
 

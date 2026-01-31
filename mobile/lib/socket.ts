@@ -236,23 +236,10 @@ export const useSocketStore = create<SocketState>((set, get) => ({
             socket.emit("typing", { chatId, isTyping })
         }
     },
-    reset: () => {
-        const socket = get().socket;
-
-        if (socket) {
-            socket.removeAllListeners();
-            socket.disconnect();
-        }
-
-        set({
-            socket: null,
-            isConnected: false,
-            onlineUsers: new Set(),
-            typingUsers: new Map(),
-            unreadChats: new Set(),
-            currentChatId: null,
-            queryClient: null,
-        });
-    },
-
+    reset: () => ({
+        onlineUsers: new Set(),
+        typingUsers: new Map(),
+        unreadChats: new Set(),
+        isConnected: false,
+    }),
 }))
