@@ -141,9 +141,9 @@ const ChatDetailScreen = () => {
       {/* Message + Keyboard input */}
 
       <KeyboardAvoidingView
-        className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={0}
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
       >
         <View className="flex-1 bg-surface">
           {isLoading ? (

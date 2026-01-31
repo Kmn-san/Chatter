@@ -21,6 +21,7 @@ interface SocketState {
     leaveChat: (chatId: string) => void;
     sendMessage: (chatId: string, text: string, currentUser: MessageSender) => void;
     sendTyping: (chatId: string, isTyping: boolean) => void;
+    reset: () => void;
 }
 
 
@@ -235,4 +236,23 @@ export const useSocketStore = create<SocketState>((set, get) => ({
             socket.emit("typing", { chatId, isTyping })
         }
     },
+    reset: () => {
+        const socket = get().socket;
+
+        if (socket) {
+            socket.removeAllListeners();
+            socket.disconnect();
+        }
+
+        set({
+            socket: null,
+            isConnected: false,
+            onlineUsers: new Set(),
+            typingUsers: new Map(),
+            unreadChats: new Set(),
+            currentChatId: null,
+            queryClient: null,
+        });
+    },
+
 }))
