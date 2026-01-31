@@ -6,6 +6,7 @@ import { ClerkProvider } from '@clerk/clerk-expo'
 import AuthSync from "@/components/AuthSync";
 import { StatusBar } from "expo-status-bar";
 import * as Sentry from '@sentry/react-native';
+import SocketConnection from "@/components/SocketConnection";
 
 Sentry.init({
   dsn: 'https://25941b0d56b832162853ff25c06ddf8f@o4510674063523840.ingest.us.sentry.io/4510776989581312',
@@ -40,6 +41,7 @@ export default Sentry.wrap(function RootLayout() {
     <ClerkProvider tokenCache={tokenCache}>
       <QueryClientProvider client={queryClient}>
         <AuthSync />
+        <SocketConnection />
         <StatusBar style="light" />
         <Stack screenOptions={{
           headerShown: false, contentStyle: {
@@ -48,9 +50,10 @@ export default Sentry.wrap(function RootLayout() {
         }}>
           <Stack.Screen name="(auth)" options={{ animation: "fade" }} />
           <Stack.Screen name="(tabs)" options={{ animation: "fade" }} />
-          <Stack.Screen name="new-chat" options={{ animation: "slide_from_bottom" ,
-            presentation:"modal",
-            gestureEnabled:true
+          <Stack.Screen name="new-chat" options={{
+            animation: "slide_from_bottom",
+            presentation: "modal",
+            gestureEnabled: true
           }} />
 
         </Stack>
