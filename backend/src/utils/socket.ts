@@ -126,7 +126,7 @@ export const initializeSocket = (httpServer: HttpServer) => {
             }
         })
 
-        socket.on("disconnet", () => {
+        socket.on("disconnect", () => {
             onlineUsers.delete(userId)
 
             //notify others 
