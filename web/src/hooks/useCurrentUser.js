@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import api from "../lib/axios"
 import { useAuth } from "@clerk/clerk-react"
 
-export const UseCurrentUser = () => {
+export const useCurrentUser = () => {
     const { getToken } = useAuth()
 
     return useQuery({

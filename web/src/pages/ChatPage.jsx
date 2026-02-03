@@ -1,4 +1,4 @@
-import { UserButton, useUser } from '@clerk/clerk-react'
+import { UserButton } from '@clerk/clerk-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from "react-router"
 import { useSocketStore } from "../lib/socket"
@@ -12,11 +12,10 @@ import { MessageBubble } from '../components/MessageBubble'
 import { ChatInput } from '../components/chatInput'
 import { NewChatModal } from '../components/newChatModal'
 import { ChatHeader } from '../components/ChatHeader'
-import { UseCurrentUser } from '../hooks/useCurrentUser'
+import { useCurrentUser } from '../hooks/useCurrentUser'
 
 function ChatPage() {
-  const { data: currentUser } = UseCurrentUser()
-  const { user } = useUser()
+  const { data: currentUser } = useCurrentUser()
   const [searchParams, setSearchParams] = useSearchParams()
   const activeChatId = searchParams.get("chat");
 
@@ -54,7 +53,7 @@ function ChatPage() {
 
   const handleSend = (e) => {
     e.preventDefault();
-    if (!messageInput.trim() || !activeChatId || !socket || !user) return
+    if (!messageInput.trim() || !activeChatId || !socket || !currentUser) return
 
     const text = messageInput.trim()
     sendMessage(activeChatId, text, currentUser)
