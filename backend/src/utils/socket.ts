@@ -1,4 +1,4 @@
-import { Socket, Server as SocketServer } from "socket.io";
+import { Server as SocketServer } from "socket.io";
 import { Server as HttpServer } from "http";
 import { verifyToken } from "@clerk/express";
 import { Message } from "../models/messageModel";

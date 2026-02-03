@@ -1,5 +1,7 @@
 import express from "express"
 import path from "path"
+import cors from "cors"
+
 import { clerkMiddleware } from '@clerk/express'
 import authRoutes from "./router/authRoutes.ts"
 import chatRoutes from "./router/chatRoutes.ts"
@@ -8,6 +10,16 @@ import userRoutes from "./router/userRoutes.ts"
 import { errorHandler } from "./middleware/errorHandler.ts"
 
 const app = express();
+const allowedOrigins = [
+    "http://localhost:8081", // expo mobile
+    "http://localhost:5173", // vite web dev
+    process.env.FRONTEND_URL!, // production
+].filter(Boolean)
+
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true // allow credentials from client ( cookies , authorization headers , etc.)
+}))
 
 app.use(express.json()) // parse incoming JSON request bodies and makes them available as req.body in your route handlers.
 
