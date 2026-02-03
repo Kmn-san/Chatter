@@ -3,7 +3,7 @@ import { LoaderIcon } from "lucide-react"
 function PageLoader() {
     return (
         <div className="flex items-center justify-center h-screen bg-black">
-            <LoaderIcon className="SIZE-12 animate-spin  text-orange-500" />
+            <LoaderIcon className="size-12 animate-spin  text-orange-500" />
         </div>
     )
 }

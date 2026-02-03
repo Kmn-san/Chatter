@@ -10,7 +10,7 @@ function HomePage() {
         <nav className="flex items-center justify-between relative z-10">
           <div className="flex items-center gap-2.5">
             <div
-              className="size-9 rounded-xl bg-linear-to-br from bg-amber-400 to-orange-500
+              className="size-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500
              flex items-center justify-center shadow-lg shadow-gray-500/20
           "
             >
