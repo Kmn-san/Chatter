@@ -35,23 +35,18 @@ export async function updateProfile(req: AuthRequest, res: Response, next: NextF
         }
 
         if (req.file) {
-            //upload to cloudinary
-            const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+            // 🔥 upload directly from memory
+            const base64 = req.file.buffer.toString("base64")
+            const dataUri = `data:${req.file.mimetype};base64,${base64}`
+
+            const uploadResult = await cloudinary.uploader.upload(dataUri, {
                 folder: "user-profile",
                 transformation: [
-                    { width: 500, height: 500, crop: "limit", quality: "auto" }
-                ]
+                    { width: 500, height: 500, crop: "limit", quality: "auto" },
+                ],
             })
             update.avatar = uploadResult.secure_url
-            // Delete local file after upload (Bun compatible)
-            try {
-                const fs = await import('fs/promises');
-                await fs.unlink(req.file.path);
-            } catch (unlinkError) {
-                console.error('Error deleting local file:', unlinkError);
-            }
         }
-
         const updatedData = await User.findByIdAndUpdate(
             userId,
             { $set: update },
