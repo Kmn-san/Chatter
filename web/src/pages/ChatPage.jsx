@@ -58,10 +58,11 @@ function ChatPage() {
   }
 
   const handleUpdate = async () => {
-    if (!nameInput.trim() && !image) return
+    const trimmedName = nameInput.trim()
+    if (!trimmedName) return
     updateUser.mutate(
       {
-        name: nameInput,
+        name: trimmedName,
         avatar: image
       }, {
       onSuccess: () => {

@@ -50,9 +50,7 @@ export async function updateProfile(req: AuthRequest, res: Response, next: NextF
             } catch (unlinkError) {
                 console.error('Error deleting local file:', unlinkError);
             }
-
         }
-
 
         const updatedData = await User.findByIdAndUpdate(
             userId,
