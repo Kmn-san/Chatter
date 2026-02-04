@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import api from "../lib/axios"
 import { useAuth } from "@clerk/clerk-react"
 
@@ -13,6 +13,29 @@ export const useCurrentUser = () => {
                 headers: { Authorization: `Bearer ${token}` }
             })
             return data
+        }
+    })
+}
+
+export const useUserUpdate = () => {
+    const { getToken } = useAuth()
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: async (updatedData) => {
+            const token = await getToken()
+            const res = await api.patch(
+                `/auth/me`,
+                updatedData,
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            return res.data
+        },
+        onSuccess: (updatedUser) => {
+            queryClient.setQueryData(["currentUser"], (old) => ({
+                ...old,
+                ...updatedUser
+            }))
         }
     })
 }

@@ -1,9 +1,8 @@
-import { UserButton } from '@clerk/clerk-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from "react-router"
 import { useSocketStore } from "../lib/socket"
 import { useSocketConnection } from '../hooks/useSocketConnection'
-import { SparklesIcon, MessageSquareIcon, PlusIcon } from "lucide-react"
+import { SparklesIcon, MessageSquareIcon, PlusIcon, UserSearch } from "lucide-react"
 
 import { useChats, useGetOrCreateChat } from "../hooks/useChats"
 import { useMessages } from "../hooks/useMessages"
@@ -12,10 +11,14 @@ import { MessageBubble } from '../components/MessageBubble'
 import { ChatInput } from '../components/chatInput'
 import { NewChatModal } from '../components/newChatModal'
 import { ChatHeader } from '../components/ChatHeader'
-import { useCurrentUser } from '../hooks/useCurrentUser'
+import { useCurrentUser, useUserUpdate } from '../hooks/useCurrentUser'
+
+import UserProfile from '../components/userProfile'
+
 
 function ChatPage() {
   const { data: currentUser } = useCurrentUser()
+
   const [searchParams, setSearchParams] = useSearchParams()
   const activeChatId = searchParams.get("chat");
 
@@ -24,6 +27,11 @@ function ChatPage() {
 
   const messagesEndRef = useRef(null)
   const typingTimeoutRef = useRef(null)
+  const updateUser = useUserUpdate()
+
+  const [isOpen, setIsOpen] = useState(false)
+  const [nameInput, setNameInput] = useState("")
+
 
   const { socket, setTyping, sendMessage } = useSocketStore()
 
@@ -43,6 +51,27 @@ function ChatPage() {
     lastMessageIdRef.current = last._id
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" })
   }, [messages])
+
+  const handleEditing = (e) => {
+    setNameInput(e.target.value)
+  }
+
+  const handleUpdate = async () => {
+    if (!nameInput.trim()) return
+    updateUser.mutate(
+      { name: nameInput }, {
+      onSuccess: () => {
+        setIsOpen(false)
+      }
+    }
+    )
+  }
+
+  useEffect(() => {
+    if (isOpen && currentUser) {
+      setNameInput(currentUser.name)
+    }
+  }, [isOpen, currentUser])
 
 
   const handleStartChat = (participantId) => {
@@ -90,7 +119,24 @@ function ChatPage() {
               </div>
               <span className="font-bold">Chatter</span>
             </Link>
-            <UserButton />
+            {/* USER ICON  */}
+            <button className='btn' onClick={() => setIsOpen(true)}>
+              <div className="avatar avatar-online">
+                <div className="w-10 rounded-full">
+                  <img src={currentUser?.avatar} />
+                </div>
+              </div>
+            </button>
+
+            {/* MODAL */}
+            <UserProfile
+              isOpen={isOpen}
+              onClose={() => setIsOpen(false)}
+              currentUser={currentUser}
+              onSave={handleUpdate}
+              onChange={handleEditing}
+              value={nameInput}
+            />
           </div>
           <button
             onClick={() => setIsNewChatModalOpen(true)}

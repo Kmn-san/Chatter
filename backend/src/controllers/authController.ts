@@ -21,6 +21,23 @@ export async function getMe(req: AuthRequest, res: Response, next: NextFunction)
     }
 }
 
+export async function updateProfile(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+        const userId = req.userId
+        const data = req.body
+
+        const updatedData = await User.findByIdAndUpdate(userId, data)
+        if (!updatedData) {
+            res.status(404).json({ message: "User not found" })
+            return
+        }
+        res.status(200).json(updatedData)
+    } catch (error) {
+        res.status(500)
+        next(error)
+    }
+}
+
 export async function authCallback(req: Request, res: Response, next: NextFunction) {
     try {
         const { userId: clerkId } = getAuth(req);
