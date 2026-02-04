@@ -22,14 +22,19 @@ export const useUserUpdate = () => {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: async (updatedData) => {
+        mutationFn: async ({name,avatar}) => {
             const token = await getToken()
-            const res = await api.patch(
+
+            const formData = new FormData()
+            if(name) formData.append("name",name)
+            if(avatar) formData.append("avatar",avatar)
+
+            const {data} = await api.patch(
                 `/auth/me`,
-                updatedData,
-                { headers: { Authorization: `Bearer ${token}` } }
+                formData,
+                {headers: { Authorization: `Bearer ${token}` }}
             )
-            return res.data
+            return data
         },
         onSuccess: (updatedUser) => {
             queryClient.setQueryData(["currentUser"], (old) => ({

@@ -31,7 +31,8 @@ function ChatPage() {
 
   const [isOpen, setIsOpen] = useState(false)
   const [nameInput, setNameInput] = useState("")
-
+  const [image, setImage] = useState(null)
+  const [avatarPreview, setAvatarPreview] = useState("")
 
   const { socket, setTyping, sendMessage } = useSocketStore()
 
@@ -57,14 +58,27 @@ function ChatPage() {
   }
 
   const handleUpdate = async () => {
-    if (!nameInput.trim()) return
+    if (!nameInput.trim() && !image) return
     updateUser.mutate(
-      { name: nameInput }, {
+      {
+        name: nameInput,
+        avatar: image
+      }, {
       onSuccess: () => {
         setIsOpen(false)
+        setImage(null)
+        setAvatarPreview("")
       }
     }
     )
+  }
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setImage(file)
+    setAvatarPreview(URL.createObjectURL(file))
   }
 
   useEffect(() => {
@@ -131,11 +145,16 @@ function ChatPage() {
             {/* MODAL */}
             <UserProfile
               isOpen={isOpen}
-              onClose={() => setIsOpen(false)}
+              onClose={() => {
+                setIsOpen(false)
+                setAvatarPreview("")
+              }}
               currentUser={currentUser}
               onSave={handleUpdate}
               onChange={handleEditing}
               value={nameInput}
+              handleAvatarChange={handleAvatarChange}
+              avatarPreview={avatarPreview || currentUser?.avatar || ""}
             />
           </div>
           <button
