@@ -55,6 +55,7 @@ export default Sentry.wrap(function RootLayout() {
             presentation: "modal",
             gestureEnabled: true
           }} />
+          <Stack.Screen name="(edit-profile)" />
 
         </Stack>
       </QueryClientProvider>

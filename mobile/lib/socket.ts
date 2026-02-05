@@ -100,23 +100,44 @@ export const useSocketStore = create<SocketState>((set, get) => ({
             })
 
             // Update chat's lastMessage directly for instant UI update
-            queryClient.setQueryData<Chat[]>(["chats"], (oldChats) => {
-                return oldChats?.map((chat) => {
-                    if (chat._id === message.chat) {
-                        return {
-                            ...chat,
-                            lastMessage: {
-                                _id: message._id,
-                                text: message.text,
-                                sender: senderId,
-                                createdAt: message.createdAt
-                            },
-                            lastMessageAt: message.createdAt
-                        }
-                    }
-                    return chat
-                })
-            })
+            queryClient.setQueryData<Chat[]>(["chats"], (old = []) => {
+                const exists = old.find(c => c._id === message.chat);
+
+                if (exists) {
+                    return old.map(chat =>
+                        chat._id === message.chat
+                            ? {
+                                ...chat,
+                                lastMessage: {
+                                    _id: message._id,
+                                    text: message.text,
+                                    sender: senderId,
+                                    createdAt: message.createdAt,
+                                },
+                                lastMessageAt: message.createdAt,
+                            }
+                            : chat
+                    );
+                }
+
+                // 👇 INSERT NEW CHAT
+                return [
+                    {
+                        _id: message.chat,
+                        participant: message.sender as MessageSender, // or payload.otherUser
+                        lastMessage: {
+                            _id: message._id,
+                            text: message.text,
+                            sender: senderId,
+                            createdAt: message.createdAt,
+                        },
+                        lastMessageAt: message.createdAt,
+                    } as Chat,
+                    ...old,
+                ];
+            });
+
+
 
             // mark as unread if not currently viewing this chat and message is from other user
             if (currentChatId !== message.chat) {
