@@ -1,7 +1,7 @@
 import { View, Text, TextInput, Pressable, Alert, KeyboardAvoidingView, Platform } from "react-native";
 import { Image } from "expo-image";
 import { useCurrentUser, useUpdateProfile } from "@/hooks/useAuth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker"
@@ -9,8 +9,12 @@ import * as ImagePicker from "expo-image-picker"
 export default function EditProfileScreen() {
     const { data: user } = useCurrentUser();
     const router = useRouter();
-    const [name, setName] = useState(user?.name ?? "");
+    const [name, setName] = useState("");
     const [image, setImage] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (user?.name && name === "") setName(user.name);
+    }, [user?.name]);
 
     const { mutate: updateProfile, isPending } = useUpdateProfile()
 
@@ -95,8 +99,10 @@ export default function EditProfileScreen() {
 
                     {/* Save */}
                     <Pressable className="mt-8 bg-primary rounded-xl py-4 items-center"
-                        onPress={handleSave}>
-                        <Text className="text-black font-semibold">Save changes</Text>
+                        onPress={handleSave}
+                        disabled={isPending}>
+                        <Text className="text-black font-semibold">{
+                            isPending ? "Proccessing ..." : "Save changes"}</Text>
                     </Pressable>
                 </View>
             </KeyboardAvoidingView>
