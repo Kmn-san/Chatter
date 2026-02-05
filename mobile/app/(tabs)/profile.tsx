@@ -2,12 +2,22 @@ import { useAuth, useUser } from "@clerk/clerk-expo";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { useCurrentUser } from "@/hooks/useAuth";
+import { Href } from "expo-router";
 
-const MENU_SECTIONS = [
+type MenuItem = {
+  icon: string;
+  label: string;
+  color: string;
+  value?: string;
+  route?: Href;
+};
+const MENU_SECTIONS: { title: string; items: MenuItem[] }[] = [
   {
     title: "Account",
     items: [
-      { icon: "person-outline", label: "Edit Profile", color: "#F4A261" },
+      { icon: "person-outline", label: "Edit Profile", color: "#F4A261", route: "/(edit-profile)" },
       { icon: "shield-checkmark-outline", label: "Privacy & Security", color: "#10B981" },
       { icon: "notifications-outline", label: "Notifications", value: "On", color: "#8B5CF6" },
     ],
@@ -32,7 +42,8 @@ const MENU_SECTIONS = [
 
 const ProfileTab = () => {
   const { signOut } = useAuth();
-  const { user } = useUser();
+  const { data: user } = useCurrentUser();
+  const router = useRouter()
 
   return (
     <ScrollView
@@ -48,23 +59,20 @@ const ProfileTab = () => {
           <View className="relative">
             <View className="rounded-full border-2 border-primary">
               <Image
-                source={user?.imageUrl}
+                source={user?.avatar}
                 style={{ width: 100, height: 100, borderRadius: 999 }}
               />
             </View>
 
-            <Pressable className="absolute bottom-1 right-1 w-8 h-8 bg-primary rounded-full items-center justify-center border-2 border-surface-dark">
-              <Ionicons name="camera" size={16} color="#0D0D0F" />
-            </Pressable>
           </View>
 
           {/* NAME & EMAIL */}
           <Text className="text-2xl font-bold text-foreground mt-4">
-            {user?.firstName} {user?.lastName}
+            {user?.name}
           </Text>
 
           <Text className="text-muted-foreground mt-1">
-            {user?.emailAddresses[0]?.emailAddress}
+            {user?.email}
           </Text>
 
           <View className="flex-row items-center mt-3 bg-green-500/20 px-3 py-1.5 rounded-full">
@@ -84,9 +92,10 @@ const ProfileTab = () => {
             {section.items.map((item, index) => (
               <Pressable
                 key={item.label}
-                className={`flex-row items-center px-4 py-3.5 active:bg-surface-light ${
-                  index < section.items.length - 1 ? "border-b border-surface-light" : ""
-                }`}
+                disabled={!item.route}
+                onPress={() => item.route && router.push(item.route)}
+                className={`flex-row items-center px-4 py-3.5 active:bg-surface-light ${index < section.items.length - 1 ? "border-b border-surface-light" : ""
+                  }`}
               >
                 <View
                   className="w-9 h-9 rounded-xl items-center justify-center"

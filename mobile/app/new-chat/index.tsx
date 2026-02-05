@@ -15,7 +15,8 @@ const NewChatScreen = () => {
 
     const { data: allUsers, isLoading, isError, refetch } = useUsers()
     const { mutate: getOrCreateChat, isPending: isCreatingChat } = useGetOrCreateChat()
-    const { onlineUsers } = useSocketStore()
+    const { onlineUsers} = useSocketStore()
+    
 
     const handleSearch = () => {
         setSubmittedQuery(searchQuery.trim().toLowerCase())
